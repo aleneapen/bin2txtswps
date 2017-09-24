@@ -17,20 +17,20 @@ if __name__ == "__main__":
     folderName = ""
     if len(sys.argv) > 1 and path.exists(path.normpath(sys.argv[1])):
         folderName = path.normpath(sys.argv[1])
-        print folderName
+        print(folderName)
 
     while not (path.exists(folderName)):
-        folderName = raw_input("The path does not exist, re-enter: ")
+        folderName = input("The path does not exist, re-enter: ")
         folderName = path.normpath(folderName)
           
     
     bin_format = ""
     if len(sys.argv) > 2 and str(sys.argv[2]).lower().strip() in bin_format_l:
         bin_format = str(sys.argv[2]).lower().strip()
-        print "Chosen format:",bin_format
+        print("Chosen format:",bin_format)
 
     while not (bin_format in bin_format_l):
-        bin_format = raw_input("Enter the format to convert: ").lower().strip()
+        bin_format = input("Enter the format to convert: ").lower().strip()
     
     if len(sys.argv)>3 and str(sys.argv[3]).lower().strip() in out_format_l:
         out_format = "." + str(sys.argv[3]).lower().strip()
