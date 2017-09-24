@@ -3,10 +3,11 @@ Convert from common neuroscience binary formats (ABF, WCP) to text formats (ATF)
 
 # Before running
 Required python modules are listed in requirements.txt (this file was auto-generated with pip)
-* Python 2.7 is required
+* Tested with python 2.7 and python 3.6
 * The program has been tested and is functional on the following operating systems:
   * Windows 7 
   * Windows 10
+  * Ubuntu 16.04
 
 ## Usage
 The entry point for this program is bin2txtswps_win.py: run this file to start the program
@@ -14,3 +15,10 @@ The entry point for this program is bin2txtswps_win.py: run this file to start t
 ## To-do
 * Extended testing - particularly with multiple channels
 * Add more input and output formats
+
+## Changelogs
+
+### 24/Sept/2017
+* Changed code to work with Python 3.6.2
+* Changed write_ATF function in ATF_functions to use numpy.stack instead of vstack
+* Changed build_full_header in ATF_functions to improve code readability
