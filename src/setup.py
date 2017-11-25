@@ -1,5 +1,7 @@
 from distutils.core import setup
 import py2exe
+import wx
+import appdirs
  
 # includes = []
 
@@ -25,18 +27,20 @@ import py2exe
 
 py2exe_options = dict(
                       ascii=False,
-                      excludes=['matplotlib','_ssl','doctest','pdb','pydoc','pyreadline', 'doctest',
-                                'optparse', 'pickle', 'calendar','_gtkagg', '_tkagg', 'bsddb', 'curses', 'email', 'pywin.debugger',	'pywin.debugger.dbgcon', 'pywin.dialogs', 'tcl','Tkconstants','setuptools','pip','_hashlib'],  # Exclude standard library
+                      includes=['appdirs','packaging'],
+                      packages=['packaging'],
+                      excludes=['matplotlib','_ssl','doctest','pdb','pydoc','pyreadline', 'doctest', 'encoding'
+                                'optparse','_gtkagg', '_tkagg', 'bsddb', 'curses', 'pywin.debugger',	'pywin.debugger.dbgcon', 'pywin.dialogs', 'tcl','Tkconstants','setuptools','pip','_hashlib'],  # Exclude standard library
                       dll_excludes=['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll','tk84.dll','numpy-atlas.dll'],  # Exclude msvcr71
 					  compressed=1,
 					  optimize=2,
-					  bundle_files= 1,
+					  bundle_files=1,
 					 )
 
 setup(name='<Name>',
       version='1.0',
       author='Alen Eapen',
-      console=[{"script":'bin2txtswps_win.py'}],
+      console=[{"script":'src\\bin2txtswps_win.py'}],
       options={'py2exe': py2exe_options},
 	  zipfile=None,
 	  

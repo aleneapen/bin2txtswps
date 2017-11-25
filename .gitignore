@@ -1,5 +1,7 @@
 *.pyc
-venv27/*
+venv27*
 experimental/*
 .vscode/*
 test_data_*
+build/*
+dist/*

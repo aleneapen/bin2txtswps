@@ -9,7 +9,7 @@ def bin_files(folderName,bin_format):
     for file in listdir(folderName):
         if file.lower().endswith("."+bin_format):
             bin_file_list.append(file)
-    if not bin_file_list:
+    if len(bin_file_list) == 0:
         print("No "+bin_format+" files found.")
         input()
         exit()
@@ -39,4 +39,7 @@ def folder_converter(folderName,bin_format,out_format = ".atf",out_folder="bin2t
     # Summary info:
     print("Created " + str(file_i) + " new txt files.")
     print("Time elapsed: " + str('{:.3f}'.format(elapsed_time)) + " seconds")
-    input()
+    try:
+        input("Press return to exit.")
+    except:
+        pass

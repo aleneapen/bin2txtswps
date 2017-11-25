@@ -22,3 +22,11 @@ The entry point for this program is bin2txtswps_win.py: run this file to start t
 * Changed code to work with Python 3.6.2
 * Changed write_ATF function in ATF_functions to use numpy.stack instead of vstack
 * Changed build_full_header in ATF_functions to improve code readability
+
+### 25/Nov/2017
+* Bug in neo 0.5.1 (reading WinWCP data) addressed by updating neo to 0.5.2 in requirements.txt
+* Numpy requirement downgraded to 1.11.1 due to a bug in compatibility with py2exe
+* Added additional headers in ATF_functions.py
+* Updated bin2txtswps_win.py for python3
+* Updated setup.py for py2exe
+* Using read_header() function of axonIO to get additional information for headers

@@ -13,9 +13,15 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
     elif fullPath_read.lower().endswith("wcp"):
         r = io.WinWcpIO(filename=fullPath_read)
 
+    
+    bl = r.read_block(lazy=False, cascade=True,)
 
-    bl = r.read_block(lazy=False, cascade=True)
-            
+    # Try to get the header info (for supported formats)
+    file_header = {}
+    try:
+        file_header = r.read_header()
+    except AttributeError:
+        pass
             
     # Iterate through each segment and analogsignal list
     for i in range(0,len(bl.segments)):
@@ -24,12 +30,13 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
         if len(bl.segments) == 1:
             txtFileName = fileName + out_format
         else:
-            txtFileName = fileName + "_" + str(i+1).zfill(ceil(len(bl.segments)/10)+1) + out_format
+            
+            txtFileName = fileName + "_" + str(i+1).zfill(int(ceil(len(bl.segments)/10)+1)) + out_format
                 
         fullPathtxt = path.join(folderName,out_folder,txtFileName)
         analogSignals =  bl.segments[i].analogsignals               
 
-        write_ATF(analogSignals,fullPathtxt)
+        write_ATF(analogSignals,fullPathtxt,file_header)
 
         print("Wrote " + fileName +  " to " + txtFileName)
         file_i += 1
