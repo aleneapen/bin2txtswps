@@ -1,7 +1,7 @@
 *.pyc
 venv27*
-experimental/*
 .vscode/*
 test_data_*
 build/*
 dist/*
+.python-version
