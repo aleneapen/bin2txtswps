@@ -23,14 +23,14 @@ Then `python bin2txtswps_run.py` to start the program
 * Removed '#' from output file headers
 * Added support for igor files (new requirement is igor python package)
 * Added new GUI, unified entry point at bin2txtswps_run.py
- * GUI uses python threading module to delegate tasks
- * Ability to cancel running task
- * New GUI provides scope for clearer/cleaner presentation
+  * GUI uses python threading module to delegate tasks
+  * Ability to cancel running task
+  * New GUI provides scope for clearer/cleaner presentation
 
 * Code restructure:
- * src folder changed to bin2txtswps, which is now a module
- * file_looper.folder_converter is now a generator
- * Other minor code cleanup
+  * src folder changed to bin2txtswps, which is now a module
+  * file_looper.folder_converter is now a generator
+  * Other minor code cleanup
 
 ### 25/Nov/2017
 * Bug in neo 0.5.1 (reading WinWCP data) addressed by updating neo to 0.5.2 in requirements.txt
