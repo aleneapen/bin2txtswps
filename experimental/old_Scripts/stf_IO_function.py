@@ -1,8 +1,6 @@
 import stfio
 from os import path, makedirs, listdir
 from numpy import array,savetxt
-folderName = "C:\\Users\\Allornon\\Downloads\\test\\"
-bin_format = ".ibw"
 
 
 # The IO function based on stimfit

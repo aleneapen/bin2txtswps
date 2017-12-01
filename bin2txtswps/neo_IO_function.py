@@ -12,6 +12,8 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
         r = io.AxonIO(filename=fullPath_read)
     elif fullPath_read.lower().endswith("wcp"):
         r = io.WinWcpIO(filename=fullPath_read)
+    elif fullPath_read.lower().endswith("ibw"):
+        r = io.IgorIO(filename=fullPath_read)
 
     
     bl = r.read_block(lazy=False, cascade=True,)
@@ -25,8 +27,9 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
             
     # Iterate through each segment and analogsignal list
     for i in range(0,len(bl.segments)):
-        folderName = path.split(fullPath_read)[0]
+        folderName,tail_name = path.split(fullPath_read)
         fileName = path.splitext(path.basename(fullPath_read))[0]
+
         if len(bl.segments) == 1:
             txtFileName = fileName + out_format
         else:
@@ -38,6 +41,6 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
 
         write_ATF(analogSignals,fullPathtxt,file_header)
 
-        print("Wrote " + fileName +  " to " + txtFileName)
+        print("Wrote " + tail_name +  " to " + txtFileName)
         file_i += 1
     return file_i
