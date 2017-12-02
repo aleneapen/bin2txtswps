@@ -1,4 +1,4 @@
-file_name_wcp = "C:\\Users\\Alen\\Documents\\repos\\bin2txtswps\\experimental\\test\\160323_002.wcp"
+file_name_wcp = ""
 import struct
 with open(file_name_wcp,mode='rb') as wcp_file:
     wcp_header_data = wcp_file.read()[:1024]

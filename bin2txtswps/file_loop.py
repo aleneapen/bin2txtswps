@@ -28,6 +28,3 @@ def folder_converter(folderName="",out_format = ".atf",out_folder="bin2txtswps")
         fullPath_read = path.join(folderName,each_file)
         # Call IO function here
         yield neo_IO_function(fullPath_read,out_format,out_folder)
-
-
-    
