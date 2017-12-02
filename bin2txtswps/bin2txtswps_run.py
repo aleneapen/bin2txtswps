@@ -51,7 +51,7 @@ DEFAULT_DICT = {
     </body><html>
     """,
     "instruction_text": ["> Choose the folder that contains binary data files to convert",
-                        "> Then, run program",
+                        "> Then, start conversion",
                         "> Converted files will be written to a subfolder named \"bin2txtswps\" in the folder you chose",
                         "> Check help page for more information"]
 }
@@ -89,6 +89,8 @@ class WorkerThread(Thread):
         self.start()
 
     def run(self):
+        print("****************************")
+        print("Starting conversion process:")
         start_time = time.time()
         file_i = 0
         for i in self.user_func(**self.variable_dict):
@@ -107,7 +109,7 @@ class WorkerThread(Thread):
         # Summary info:
         print("Created " + str(number_of_files) + " new txt files.")
         print("Time elapsed: " + str('{:.3f}'.format(elapsed_time)) + " seconds")
-
+        print("****************************")
     def abort(self):
         self._want_abort = 1
 
@@ -169,7 +171,7 @@ class Main_Frame(wx.Frame):
         
         # HEADER
         header_title = wx.StaticText(panel,label="bin2txtswps")
-        header_font = wx.Font(20, wx.DECORATIVE,wx.NORMAL,wx.BOLD)
+        header_font = wx.Font(20, wx.DEFAULT,wx.NORMAL,wx.NORMAL)
         header_title.SetFont(header_font)
         self.main_sizer.Add(header_title,pos=(0,0),flag=wx.TOP|wx.LEFT|wx.BOTTOM, border = 10)
         self.main_sizer.Add(wx.StaticLine(panel), pos=(1, 0), span=(1, 5), flag=wx.EXPAND|wx.LEFT|wx.RIGHT, border=5)
@@ -183,8 +185,8 @@ class Main_Frame(wx.Frame):
 
         self.button_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.folder_button = wx.Button(panel, label="Choose Folder",id=ID_FOLDER_BUTTON)
-        self.run_button = wx.Button(panel, label="Run Program",id=ID_RUN_BUTTON)
-        self.cancel_button = wx.Button(panel, label="Cancel Program",id=ID_CANCEL_BUTTON)
+        self.run_button = wx.Button(panel, label="Start Conversion",id=ID_RUN_BUTTON)
+        self.cancel_button = wx.Button(panel, label="Cancel Conversion",id=ID_CANCEL_BUTTON)
         self.button_sizer.Add(self.folder_button,flag=wx.RIGHT|wx.LEFT|wx.BOTTOM, border=5)
         self.button_sizer.Add(self.run_button,flag=wx.RIGHT|wx.LEFT|wx.BOTTOM, border=5)
         self.button_sizer.Add(self.cancel_button,flag=wx.RIGHT|wx.LEFT|wx.BOTTOM, border=5)
@@ -199,9 +201,9 @@ class Main_Frame(wx.Frame):
         output_text = wx.TextCtrl(output_box,style=wx.TE_MULTILINE|wx.TE_READONLY)
         output_text.SetBackgroundColour(wx.Colour(0,0,0))
         output_text.SetForegroundColour(wx.Colour(255,255,255))
-        output_text.SetFont(wx.Font(-1, wx.DEFAULT,wx.NORMAL,wx.BOLD))
+        output_text.SetFont(wx.Font(-1, wx.TELETYPE,wx.NORMAL,wx.NORMAL))
 
-        output_text.SetMargins(5)
+        
         output_box_sizer.Add(output_text,flag=wx.EXPAND|wx.ALL,proportion=1,border=5)
         output_box_sizer.SetMinSize(-1,300)
         redir=RedirectText(output_text)
@@ -209,18 +211,23 @@ class Main_Frame(wx.Frame):
         sys.stderr = redir
         self.output_text_box = output_text
         
+        bottom_space = wx.StaticText(panel)
+        
         
         self.main_sizer.Add(self.instructions_box_sizer,pos=(2,0),span=(1,5),flag=wx.EXPAND|wx.ALL, border=5)
-        self.main_sizer.Add(output_box_sizer,pos=(3,0),span=(5,5),flag=wx.EXPAND|wx.ALL, border=5)
+        self.main_sizer.Add(output_box_sizer,pos=(3,0),span=(1,5),flag=wx.ALL|wx.EXPAND, border=5)
+        self.main_sizer.Add(bottom_space,pos=(4,0), border=1)
         self.main_sizer.AddGrowableCol(0)
         self.main_sizer.AddGrowableRow(3)
         
+        
+
         panel.SetSizer(self.main_sizer)
         
 
 
         self.main_sizer.Fit(self)
-
+        
         # Binds for buttons
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_FOLDER_BUTTON)
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_RUN_BUTTON)
@@ -268,11 +275,11 @@ class Main_Frame(wx.Frame):
             dlg.Destroy()
         if id == ID_RUN_BUTTON:
             if self.user_folderName == "":
-                print("Choose a folder first.")
+                print("Choose a folder first")
                 return
             
             if not self.worker:
-                print("Starting conversion process:")
+                
                 self.worker = WorkerThread(self,file_loop.folder_converter,{"folderName":self.user_folderName})
                 self.folder_button.Enable(False)
                 self.run_button.Enable(False)
