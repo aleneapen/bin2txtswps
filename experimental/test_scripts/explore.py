@@ -1,4 +1,5 @@
-file_name = "C:\\Users\\Alen\\Documents\\repos\\bin2txtswps\\experimental\\test\\mine\\77280483.abf"
+file_name = "/home/theemaram/Desktop/ABF/55260344.abf"
+file_name_2 = "/home/theemaram/Desktop/77280485.abf"
 file_name_wcp = "C:\\Users\\Alen\\Documents\\repos\\bin2txtswps\\experimental\\test\\160323_002.wcp"
 import neo 
 

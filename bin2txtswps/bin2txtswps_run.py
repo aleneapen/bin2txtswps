@@ -62,7 +62,7 @@ class RedirectText(object):
         self.out=aWxTextCtrl
  
     def write(self,string):
-        self.out.AppendText(string)
+        wx.CallAfter(self.out.AppendText, string)
 
 
 
@@ -202,7 +202,7 @@ class Main_Frame(wx.Frame):
         output_text.SetFont(wx.Font(-1, wx.DEFAULT,wx.NORMAL,wx.BOLD))
 
         output_text.SetMargins(5)
-        output_box_sizer.Add(output_text,flag=wx.EXPAND|wx.ALL,proportion=1)
+        output_box_sizer.Add(output_text,flag=wx.EXPAND|wx.ALL,proportion=1,border=5)
         output_box_sizer.SetMinSize(-1,300)
         redir=RedirectText(output_text)
         sys.stdout = redir
@@ -214,6 +214,7 @@ class Main_Frame(wx.Frame):
         self.main_sizer.Add(output_box_sizer,pos=(3,0),span=(5,5),flag=wx.EXPAND|wx.ALL, border=5)
         self.main_sizer.AddGrowableCol(0)
         self.main_sizer.AddGrowableRow(3)
+        
         panel.SetSizer(self.main_sizer)
         
 
