@@ -2,7 +2,7 @@ from numpy import savetxt, subtract, array, concatenate
 
 
 # Function to write ATF file
-def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_header = {}):
+def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_header = {},file_type='abf'):
     
 
     def find_NumSamplesPerSweep(file_header):
@@ -23,17 +23,32 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
         return len(analogSignal_list[0])
 
     
-    def find_ScaleFactor_mVperUnit(file_header):
+    def find_ScaleFactor_mVperUnit(file_header, file_type):
         """
         Function to find the total gain in mVperunit
 
         """
+
+        ret_list = []
+
+        # Process WCP header
+        if file_type == 'wcp':
+            for channel in range(int(file_header['NC'])):
+                mVperUnit = float(file_header.get("YG{}".format(channel)))
+                ret_list.append(mVperUnit)
+            return ret_list
+
+
+
+
+        # Process ABF header
+
         channel_headers = ['fInstrumentScaleFactor', 'fADCProgrammableGain',('nTelegraphEnable','fTelegraphAdditGain')]
 
         if 'listADCInfo' not in file_header:
             return [1000 for i in range(len(analogSignal_list))]
 
-        ret_list = []
+        
         for channel_dict in  file_header['listADCInfo']:
             total_scalefactor_V = 1
             if 'fSignalGain' in channel_dict:
@@ -72,12 +87,12 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
                     OPT_HEADER + "\t" + str(data_cols),
                     "\"SweepStartTimesMS = " + str(channel.times[0].rescale('ms'))[:-2].strip(" \n\t") + "\"",
                     "\"NumSamplesPerSweep = " + str(find_NumSamplesPerSweep(file_header)) + "\"",
-                    "\"ScaleFactor_mVperUnit = " + ", ".join([str(num) for num in find_ScaleFactor_mVperUnit(file_header)]) + "\"",
+                    "\"ScaleFactor_mVperUnit = " + ", ".join([str(num) for num in find_ScaleFactor_mVperUnit(file_header,file_type)]) + "\"",
                     time_header + data_col_header])
                     
     return header_string
     
-def write_ATF(analogSignals,write_path,file_header):
+def write_ATF(analogSignals,write_path,file_header,file_type='abf'):
 
     ret_array = array(subtract(analogSignals[0].times, analogSignals[0].times[0]).rescale("ms")).reshape(len(analogSignals[0].times),1)
 
@@ -89,6 +104,6 @@ def write_ATF(analogSignals,write_path,file_header):
             ret_array,\
             fmt=('%f' + '\t%0.4f'*len(analogSignals)),\
             newline='\n',\
-            header=build_full_header(analogSignals,file_header=file_header),
+            header=build_full_header(analogSignals,file_header=file_header,file_type=file_type),
             comments=''
     )
