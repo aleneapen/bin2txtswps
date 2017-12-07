@@ -6,6 +6,7 @@ import file_loop
 from threading import Thread
 import time
 import webbrowser
+from traceback import print_exc
 
 # Simple browser elements for about and help
 class wxHTML(wxHTMLWindow):
@@ -93,14 +94,19 @@ class WorkerThread(Thread):
         print("Starting conversion process:")
         start_time = time.time()
         file_i = 0
-        for i in self.user_func(**self.variable_dict):
-            file_i += i
-            if self._want_abort:
-                print('Trying to stop conversion')
-                self.show_conversion_info(file_i,start_time)
-                wx.PostEvent(self._notify_window, ResultEvent(None))
-                return
-            
+        try:
+            for i in self.user_func(**self.variable_dict):
+                file_i += i
+                if self._want_abort:
+                    print('Trying to stop conversion')
+                    self.show_conversion_info(file_i,start_time)
+                    wx.PostEvent(self._notify_window, ResultEvent(None))
+                    return
+        except Exception as e:
+            print('Error in conversion. Stopping process')
+            print_exc()
+            wx.PostEvent(self._notify_window, ResultEvent(None))
+            return
         self.show_conversion_info(file_i,start_time)
 
         wx.PostEvent(self._notify_window, ResultEvent(1))
