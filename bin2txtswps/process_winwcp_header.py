@@ -2,7 +2,7 @@
 
 def get_header_list(file_name_wcp,HB_size=1024):
     with open(file_name_wcp,mode='rb') as wcp_file:
-        wcp_header_data = wcp_file.read()[:1024]
+        wcp_header_data = wcp_file.read()[:HB_size]
         return wcp_header_data.decode("ASCII").split("\n")
 
 
