@@ -130,7 +130,7 @@ class Main_Frame(wx.Frame):
     def __init__(self, *args, **kwargs):
         super(Main_Frame,self).__init__(*args,**kwargs)
         self.SetTitle("bin2txtswps")
-        self.Center()
+        
         self.SetBackgroundColour("white")
         
         
@@ -207,7 +207,7 @@ class Main_Frame(wx.Frame):
         output_text = wx.TextCtrl(output_box,style=wx.TE_MULTILINE|wx.TE_READONLY)
         output_text.SetBackgroundColour(wx.Colour(0,0,0))
         output_text.SetForegroundColour(wx.Colour(255,255,255))
-        output_text.SetFont(wx.Font(-1, wx.TELETYPE,wx.NORMAL,wx.NORMAL))
+        output_text.SetFont(wx.Font(-1, wx.DEFAULT,wx.NORMAL,wx.NORMAL))
 
         
         output_box_sizer.Add(output_text,flag=wx.EXPAND|wx.ALL,proportion=1,border=5)
@@ -233,7 +233,7 @@ class Main_Frame(wx.Frame):
 
 
         self.main_sizer.Fit(self)
-        
+        self.Center()
         # Binds for buttons
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_FOLDER_BUTTON)
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_RUN_BUTTON)

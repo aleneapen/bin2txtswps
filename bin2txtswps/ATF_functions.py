@@ -46,13 +46,12 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
         channel_headers = ['fInstrumentScaleFactor', 'fADCProgrammableGain',('nTelegraphEnable','fTelegraphAdditGain')]
 
         if 'listADCInfo' not in file_header:
-            return [1000 for i in range(len(analogSignal_list))]
+            return [0 for i in range(len(analogSignal_list))] # Return 0 for ScaleFactor_mVperUnit scale information is not in ABF header 
 
         
         for channel_dict in  file_header['listADCInfo']:
             total_scalefactor_V = 1
             if 'fSignalGain' in channel_dict:
-                
                 if 'nSignalType' in file_header and file_header['nSignalType']!=0:
                     total_scalefactor_V *= channel_dict['fSignalGain']
             if 'fInstrumentScaleFactor' in channel_dict:
