@@ -1,7 +1,15 @@
-def get_header_list(file_name_wcp,HB_size=1024):
-with open(file_name_wcp,mode='rb') as wcp_file:
-    wcp_header_data = wcp_file.read()[:HB_size]
-    return wcp_header_data.decode("ASCII").split("\n")
+from igor import binarywave
 
-file_name = "/home/theemaram/repos/bin2txtswps/experimental/test_files/ibw/AvAllo.ibw"
-HB_size=1024
+def get_header_dict(filename):
+    return binarywave.load(filename)
+
+def get_ScaleFactor_mVperUnit_igor(header_dict):
+    if "botFullScale" in header_dict and "topFullScale" in header_dict:
+        return 1000 / ((header_dict["topFullScale"] - header_dict["botFullScale"])/20)
+    return 0
+
+
+
+filename = r"C:\Users\Alen\Documents\repos\bin2txtswps\experimental\test_files\igor_test\Avcontrol.ibw"
+
+my_dict["wave"]["wave_header"]["botFullScale"]

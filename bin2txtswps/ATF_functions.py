@@ -39,7 +39,8 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
             return ret_list
 
 
-
+        if file_type == 'ibw':
+            pass # TODO: Continue
 
         # Process ABF header
 
