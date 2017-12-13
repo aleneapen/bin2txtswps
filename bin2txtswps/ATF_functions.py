@@ -40,7 +40,9 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
 
 
         if file_type == 'ibw':
-            pass # TODO: Continue
+            if "botFullScale" in file_header and "topFullScale" in file_header:
+                return [1000 / ((file_header["topFullScale"] - file_header["botFullScale"])/20)]
+            return [0]
 
         # Process ABF header
 
@@ -76,6 +78,11 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
 
     for channel in analogSignal_list:
         rec_units = str(channel.units.dimensionality)
+        
+        if rec_units.endswith("A"):
+            rec_units = "pA"
+        elif rec_units.endswith("V"):
+            rec_units ="mV"
 
         data_col_header += data_col_format.format(
             str(channel.name).strip(' \t\r\n\0'), \
@@ -98,6 +105,10 @@ def write_ATF(analogSignals,write_path,file_header,file_type='abf'):
 
 
     for signal in analogSignals:
+        if signal.units.dimensionality.string.endswith("A"):
+            signal = signal.rescale("pA")
+        elif signal.units.dimensionality.string.endswith("V"):
+            signal = signal.rescale("mV")
         ret_array = concatenate((ret_array,array(signal)),axis=1)
 
     savetxt(write_path,\

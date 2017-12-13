@@ -2,8 +2,8 @@ from neo import io
 from os import path
 from ATF_functions import build_full_header,write_ATF
 from math import ceil
-from process_winwcp_header import read_bin_header
-
+import process_winwcp_header 
+import process_igor_header
 
 # The IO function based on neo
 def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
@@ -23,10 +23,11 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
     elif fullPath_read.lower().endswith("wcp"):
         r = io.WinWcpIO(filename=fullPath_read)
         input_format = "wcp"
-        file_header = read_bin_header(fullPath_read)
+        file_header = process_winwcp_header.read_bin_header(fullPath_read)
     elif fullPath_read.lower().endswith("ibw"):
         r = io.IgorIO(filename=fullPath_read)
         input_format = "ibw"
+        file_header = process_igor_header.get_header_dict(fullPath_read)
 
     
     bl = r.read_block(lazy=False, cascade=True,)
@@ -46,7 +47,7 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
             txtFileName = fileName + "_" + str(i+1).zfill(int(ceil(len(bl.segments)/10)+1)) + out_format
                 
         fullPathtxt = path.join(folderName,out_folder,txtFileName)
-        analogSignals =  bl.segments[i].analogsignals               
+        analogSignals =  bl.segments[i].analogsignals            
 
         write_ATF(analogSignals,fullPathtxt,file_header,input_format)
 

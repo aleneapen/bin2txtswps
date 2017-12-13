@@ -26,8 +26,8 @@ def read_bin_header(file_name_wcp,HB_size = 1024):
     header_dict, HB_size = process_header(get_header_list(file_name_wcp))
 
     # Check if header size is enough:
-    if HB_size!=1024:
-        header_dict,_ = process_header(get_header_list(file_name_wcp,HB_size=HB_size))
+    # if HB_size!=1024:
+    #     header_dict,_ = process_header(get_header_list(file_name_wcp,HB_size=HB_size))
 
     return header_dict
 
