@@ -6,7 +6,6 @@ from neo_IO_function import neo_IO_function
 BIN_FORMATS = ("abf","wcp","ibw")
 def bin_files(folderName):
     bin_file_list = []
-    
     for each_file in listdir(folderName):
         if each_file.lower().endswith(BIN_FORMATS) and path.isfile(path.join(folderName,each_file)):
             bin_file_list.append(each_file)

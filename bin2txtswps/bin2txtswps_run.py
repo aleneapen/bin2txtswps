@@ -207,6 +207,7 @@ class Main_Frame(wx.Frame):
         output_text = wx.TextCtrl(output_box,style=wx.TE_MULTILINE|wx.TE_READONLY)
         output_text.SetBackgroundColour(wx.Colour(0,0,0))
         output_text.SetForegroundColour(wx.Colour(255,255,255))
+        
         output_text.SetFont(wx.Font(-1, wx.DEFAULT,wx.NORMAL,wx.NORMAL))
 
         
@@ -234,6 +235,7 @@ class Main_Frame(wx.Frame):
 
         self.main_sizer.Fit(self)
         self.Center()
+  
         # Binds for buttons
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_FOLDER_BUTTON)
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_RUN_BUTTON)
