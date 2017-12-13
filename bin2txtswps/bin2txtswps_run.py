@@ -6,6 +6,7 @@ import file_loop
 from threading import Thread
 import time
 import webbrowser
+from traceback import print_exc
 
 # Simple browser elements for about and help
 class wxHTML(wxHTMLWindow):
@@ -93,14 +94,19 @@ class WorkerThread(Thread):
         print("Starting conversion process:")
         start_time = time.time()
         file_i = 0
-        for i in self.user_func(**self.variable_dict):
-            file_i += i
-            if self._want_abort:
-                print('Trying to stop conversion')
-                self.show_conversion_info(file_i,start_time)
-                wx.PostEvent(self._notify_window, ResultEvent(None))
-                return
-            
+        try:
+            for i in self.user_func(**self.variable_dict):
+                file_i += i
+                if self._want_abort:
+                    print('Trying to stop conversion')
+                    self.show_conversion_info(file_i,start_time)
+                    wx.PostEvent(self._notify_window, ResultEvent(None))
+                    return
+        except Exception as e:
+            print('Error in conversion. Stopping process')
+            print_exc()
+            wx.PostEvent(self._notify_window, ResultEvent(None))
+            return
         self.show_conversion_info(file_i,start_time)
 
         wx.PostEvent(self._notify_window, ResultEvent(1))
@@ -124,7 +130,7 @@ class Main_Frame(wx.Frame):
     def __init__(self, *args, **kwargs):
         super(Main_Frame,self).__init__(*args,**kwargs)
         self.SetTitle("bin2txtswps")
-        self.Center()
+        
         self.SetBackgroundColour("white")
         
         
@@ -201,7 +207,8 @@ class Main_Frame(wx.Frame):
         output_text = wx.TextCtrl(output_box,style=wx.TE_MULTILINE|wx.TE_READONLY)
         output_text.SetBackgroundColour(wx.Colour(0,0,0))
         output_text.SetForegroundColour(wx.Colour(255,255,255))
-        output_text.SetFont(wx.Font(-1, wx.TELETYPE,wx.NORMAL,wx.NORMAL))
+        
+        output_text.SetFont(wx.Font(-1, wx.DEFAULT,wx.NORMAL,wx.NORMAL))
 
         
         output_box_sizer.Add(output_text,flag=wx.EXPAND|wx.ALL,proportion=1,border=5)
@@ -227,7 +234,8 @@ class Main_Frame(wx.Frame):
 
 
         self.main_sizer.Fit(self)
-        
+        self.Center()
+  
         # Binds for buttons
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_FOLDER_BUTTON)
         self.Bind(wx.EVT_BUTTON,  self.OnButtonClick,id=ID_RUN_BUTTON)
