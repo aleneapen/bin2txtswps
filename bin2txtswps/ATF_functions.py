@@ -78,19 +78,20 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
 
     for channel in analogSignal_list:
         rec_units = str(channel.units.dimensionality)
-
         data_col_header += data_col_format.format(
             str(channel.name).strip(' \t\r\n\0'), \
             rec_units if rec_units.lower() != "dimensionless" else ""
             )
+
+
     time_header = "\"Time (ms)\""
 
     header_string = "\n".join(["ATF\t" + ATF_VER,
-                    OPT_HEADER + "\t" + str(data_cols),
-                    "\"SweepStartTimesMS = " + str(channel.times[0].rescale('ms'))[:-2].strip(" \n\t") + "\"",
-                    "\"NumSamplesPerSweep = " + str(find_NumSamplesPerSweep(file_header)) + "\"",
-                    "\"ScaleFactor_mVperUnit = " + ", ".join([str(num) for num in find_ScaleFactor_mVperUnit(file_header,file_type)]) + "\"",
-                    time_header + data_col_header])
+                    "{} \t {}".format(OPT_HEADER,str(data_cols)),
+                    "\"SweepStartTimesMS = {}\"".format(str(channel.times[0].rescale('ms'))[:-2].strip(" \n\t")),
+                    "\"NumSamplesPerSweep = {}\"".format(str(find_NumSamplesPerSweep(file_header))),
+                    "\"ScaleFactor_mVperUnit = {} \"".format(", ".join([str(num) for num in find_ScaleFactor_mVperUnit(file_header,file_type)])),
+                    "{}{}".format(time_header,data_col_header)])
                     
     return header_string
     
