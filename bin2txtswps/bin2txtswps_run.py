@@ -103,7 +103,7 @@ class WorkerThread(Thread):
                     wx.PostEvent(self._notify_window, ResultEvent(None))
                     return
         except Exception as e:
-            print('Error in conversion. Stopping process')
+            print('*********************************************\nError in converting file. Stopping process \n*********************************************')
             print_exc()
             wx.PostEvent(self._notify_window, ResultEvent(None))
             return

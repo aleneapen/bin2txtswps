@@ -1,5 +1,5 @@
 from numpy import savetxt, subtract, array, concatenate
-
+import quantities as pq 
 
 # Function to write ATF file
 def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_header = {},file_type='abf'):
@@ -52,7 +52,7 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
             return [0 for i in range(len(analogSignal_list))] # Return 0 for ScaleFactor_mVperUnit scale information is not in ABF header 
 
         
-        for channel_dict in  file_header['listADCInfo']:
+        for channel_dict in file_header['listADCInfo']:
             total_scalefactor_V = 1
             if 'fSignalGain' in channel_dict:
                 if 'nSignalType' in file_header and file_header['nSignalType']!=0:
@@ -76,18 +76,22 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
     data_col_format = '\t"{0} ({1})"'
     data_col_header = ""
 
-    for channel in analogSignal_list:
-        rec_units = str(channel.units.dimensionality)
+    channel_units_array = file_header.get("sADCUnits")
+    channel_names_array = file_header.get("sADCChannelName")
 
+    for channel_i in range(len(analogSignal_list)):
+        print(channel_units_array)
+        rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(' \t\r\n\0')).units)
+        channel_name = channel_names_array[channel_i]
         data_col_header += data_col_format.format(
-            str(channel.name).strip(' \t\r\n\0'), \
+            channel_name.strip(' \t\r\n\0'), \
             rec_units if rec_units.lower() != "dimensionless" else ""
             )
     time_header = "\"Time (ms)\""
 
     header_string = "\n".join(["ATF\t" + ATF_VER,
                     OPT_HEADER + "\t" + str(data_cols),
-                    "\"SweepStartTimesMS = " + str(channel.times[0].rescale('ms'))[:-2].strip(" \n\t") + "\"",
+                    "\"SweepStartTimesMS = " + str(analogSignal_list[0].t_start.rescale('ms'))[:-2].strip(" \n\t") + "\"",
                     "\"NumSamplesPerSweep = " + str(find_NumSamplesPerSweep(file_header)) + "\"",
                     "\"ScaleFactor_mVperUnit = " + ", ".join([str(num) for num in find_ScaleFactor_mVperUnit(file_header,file_type)]) + "\"",
                     time_header + data_col_header])

@@ -1,4 +1,5 @@
-from neo import io
+from neo.io import (WinWcpIO, IgorIO)
+from Modified_AxonIO import AxonIO
 from os import path
 from ATF_functions import build_full_header,write_ATF
 from math import ceil
@@ -14,18 +15,18 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
 
     # Open and Read the file, add more here if needed
     if fullPath_read.lower().endswith("abf"):
-        r = io.AxonIO(filename=fullPath_read)
+        r = AxonIO(filename=fullPath_read)
         input_format = "abf"
         try:
             file_header = r.read_header()
         except AttributeError:
             pass
     elif fullPath_read.lower().endswith("wcp"):
-        r = io.WinWcpIO(filename=fullPath_read)
+        r = WinWcpIO(filename=fullPath_read)
         input_format = "wcp"
         file_header = process_winwcp_header.read_bin_header(fullPath_read)
     elif fullPath_read.lower().endswith("ibw"):
-        r = io.IgorIO(filename=fullPath_read)
+        r = IgorIO(filename=fullPath_read)
         input_format = "ibw"
         file_header = process_igor_header.get_header_dict(fullPath_read)
 
@@ -48,7 +49,7 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
                 
         fullPathtxt = path.join(folderName,out_folder,txtFileName)
         analogSignals =  bl.segments[i].analogsignals            
-
+        
         write_ATF(analogSignals,fullPathtxt,file_header,input_format)
 
         print("Wrote " + tail_name +  " to " + txtFileName)
