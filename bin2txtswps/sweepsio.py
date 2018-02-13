@@ -22,6 +22,8 @@ class SweepObject:
         data_cols = len(self.sweep_data)+1
         data_col_format = '\t"{0} ({1})"'
         data_col_header = ""
+
+        # ABF formats should build from the header
         if self.file_format == "abf":
             channel_units_array = []
             channel_names_array = []
@@ -40,18 +42,25 @@ class SweepObject:
 
 
             for channel_i in range(len(self.sweep_data)):
-                rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(' \t\r\n\0')).dimensionality)
-                channel_name = channel_names_array[channel_i]
+                try:
+                    rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(' \t\r\n\0')).dimensionality)
+                except:
+                    rec_units = str(self.sweep_data[channel_i].units.dimensionality)
+                                
+                channel_name = channel_names_array[channel_i].strip(' \t\r\n\0')
+                if channel_name == "":
+                    channel_name = self.sweep_data[channel_i].name.strip(' \t\r\n\0')
+
+                
                 data_col_header += data_col_format.format(
-                    channel_name.strip(' \t\r\n\0'), \
+                    channel_name, \
                     rec_units if rec_units.lower() != "dimensionless" else ""
                     )
 
-            
+
+        # Other formats can use neo
         else:
             for channel in self.sweep_data:
-                print(channel.name)
-                print(channel.units)
                 rec_units = str(channel.units.dimensionality)
                 data_col_header += data_col_format.format(
                     str(channel.name).strip(' \t\r\n\0'), \
@@ -87,7 +96,6 @@ class SweepObject:
         """
 
 
-
         ret_list = []
 
         # Process WCP header
@@ -97,14 +105,13 @@ class SweepObject:
                 ret_list.append(mVperUnit)
             return ret_list
 
-
+        # Igor binary wave file
         if self.file_format == 'ibw':
             if "botFullScale" in self.header and "topFullScale" in self.header:
                 return [1000 / ((self.header["topFullScale"] - self.header["botFullScale"])/20)]
             return [0]
 
         # Process ABF header
-
         if self.file_format == 'abf':
 
             # Look in header first

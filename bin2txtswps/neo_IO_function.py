@@ -52,4 +52,4 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
 
         print("Wrote " + tail_name +  " to " + txtFileName)
         file_i += 1
-    return file_i
+        yield file_i

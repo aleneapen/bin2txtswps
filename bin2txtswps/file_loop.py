@@ -23,8 +23,10 @@ def folder_converter(folderName="",out_format = ".atf",out_folder="bin2txtswps")
 
     if not (path.exists(writeFolder)):
         makedirs(writeFolder)
-
+    
     for each_file in bin_file_list:
         fullPath_read = path.join(folderName,each_file)
         # Call IO function here
-        yield neo_IO_function(fullPath_read,out_format,out_folder)
+        
+        for sweep in neo_IO_function(fullPath_read,out_format,out_folder):
+            yield 1
