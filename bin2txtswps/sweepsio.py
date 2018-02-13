@@ -71,7 +71,7 @@ class SweepObject:
 
         header_string = "\n".join(["ATF\t" + ATF_VER,
                         "{} \t {}".format(OPT_HEADER,str(data_cols)),
-                        "\"SweepStartTimesMS = {}\"".format(str(self.sweep_data[0].t_start.rescale('ms'))[:-2].strip(" \n\t")),
+                        "\"SweepStartTimesMS = {:e}\"".format(float(self.sweep_data[0].t_start.rescale('ms'))),
                         "\"NumSamplesPerSweep = {}\"".format(str(self.find_NumSamplesPerSweep())),
                         "\"ScaleFactor_mVperUnit = {}\"".format(", ".join([str(num) for num in self.find_ScaleFactor_mVperUnit()])),
                         "{}{}".format(time_header,data_col_header)])
