@@ -1,8 +1,8 @@
 from neo.io import (WinWcpIO, IgorIO)
 from Modified_AxonIO import AxonIO
 from os import path
-from ATF_functions import build_full_header,write_ATF
-from math import ceil
+from ATF_functions import write_ATF
+from math import (ceil, log10)
 import process_winwcp_header 
 import process_igor_header
 
@@ -32,21 +32,19 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
 
     
     bl = r.read_block(lazy=False, cascade=True,)
-
-    # Try to get the header info (for supported formats)
     
-            
+    if len(bl.segments) > 1:
+        zfill_max_int = int(ceil(log10(len(bl.segments)))+1)
+
     # Iterate through each segment and analogsignal list
     for i in range(0,len(bl.segments)):
         folderName,tail_name = path.split(fullPath_read)
         fileName = path.splitext(path.basename(fullPath_read))[0]
 
-        if len(bl.segments) == 1:
+        if len(bl.segments) <= 1:
             txtFileName = fileName + out_format
         else:
-            
-            txtFileName = fileName + "_" + str(i+1).zfill(int(ceil(len(bl.segments)/10)+1)) + out_format
-                
+            txtFileName = fileName + "_" + str(i+1).zfill(zfill_max_int) + out_format
         fullPathtxt = path.join(folderName,out_folder,txtFileName)
         analogSignals =  bl.segments[i].analogsignals            
         

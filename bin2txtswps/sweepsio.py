@@ -1,39 +1,73 @@
 ATF_VER="1.0"
 OPT_HEADER="3"
+from numpy import savetxt, subtract, array, concatenate
+import quantities as pq 
+
 
 class SweepObject:
     def __init__(self,sweep_data,file_format,header={}):
         self.sweep_data = sweep_data
         self.file_format = file_format
         self.header = header
+        if self.file_format == "abf":
+            self.abf_version = int(self.header.get("fFileVersionNumber",0))
+
+    def build_sweep_array(self):
+        ret_array = array(subtract(self.sweep_data[0].times, self.sweep_data[0].times[0]).rescale("ms")).reshape(len(self.sweep_data[0].times),1)
+        for signal in self.sweep_data:
+            ret_array = concatenate((ret_array,array(signal)),axis=1)
+        return ret_array
 
     def build_atf_header(self):
-        if self.file_format = "abf":
-            data_cols = len(analogSignal_list)+1
-            data_col_format = '\t"{0} ({1})"'
-            data_col_header = ""
+        data_cols = len(self.sweep_data)+1
+        data_col_format = '\t"{0} ({1})"'
+        data_col_header = ""
+        if self.file_format == "abf":
+            channel_units_array = []
+            channel_names_array = []
 
-            channel_units_array = file_header.get("sADCUnits")
-            channel_names_array = file_header.get("sADCChannelName")
+            if self.abf_version == 1:
+                channel_units_array = self.header.get("sADCUnits")
+                channel_names_array = self.header.get("sADCChannelName")
 
-            for channel_i in range(len(analogSignal_list)):
-                print(channel_units_array)
-                rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(' \t\r\n\0')).units)
+            if self.abf_version == 2:
+                channel_list = self.header.get("listADCInfo")
+                
+                if channel_list:
+                    for channel_dict in channel_list:
+                        channel_units_array.append(channel_dict.get("ADCChUnits"))
+                        channel_names_array.append(channel_dict.get("ADCChNames"))
+
+
+            for channel_i in range(len(self.sweep_data)):
+                rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(' \t\r\n\0')).dimensionality)
                 channel_name = channel_names_array[channel_i]
                 data_col_header += data_col_format.format(
                     channel_name.strip(' \t\r\n\0'), \
                     rec_units if rec_units.lower() != "dimensionless" else ""
                     )
-            time_header = "\"Time (ms)\""
 
-            header_string = "\n".join(["ATF\t" + ATF_VER,
-                            OPT_HEADER + "\t" + str(data_cols),
-                            "\"SweepStartTimesMS = " + str(analogSignal_list[0].t_start.rescale('ms'))[:-2].strip(" \n\t") + "\"",
-                            "\"NumSamplesPerSweep = " + str(find_NumSamplesPerSweep(file_header)) + "\"",
-                            "\"ScaleFactor_mVperUnit = " + ", ".join([str(num) for num in find_ScaleFactor_mVperUnit(file_header,file_type)]) + "\"",
-                            time_header + data_col_header])
+            
+        else:
+            for channel in self.sweep_data:
+                print(channel.name)
+                print(channel.units)
+                rec_units = str(channel.units.dimensionality)
+                data_col_header += data_col_format.format(
+                    str(channel.name).strip(' \t\r\n\0'), \
+                    rec_units if rec_units.lower() != "dimensionless" else ""
+                    )
+            
+        time_header = "\"Time (ms)\""
+
+        header_string = "\n".join(["ATF\t" + ATF_VER,
+                        "{} \t {}".format(OPT_HEADER,str(data_cols)),
+                        "\"SweepStartTimesMS = {}\"".format(str(self.sweep_data[0].t_start.rescale('ms'))[:-2].strip(" \n\t")),
+                        "\"NumSamplesPerSweep = {}\"".format(str(self.find_NumSamplesPerSweep())),
+                        "\"ScaleFactor_mVperUnit = {}\"".format(", ".join([str(num) for num in self.find_ScaleFactor_mVperUnit()])),
+                        "{}{}".format(time_header,data_col_header)])
                             
-            return header_string
+        return header_string
 
     def find_NumSamplesPerSweep(self,):
         """
@@ -43,7 +77,7 @@ class SweepObject:
             
 
         # just return length of analogSignal
-        return len(self.sweep_data[0]) if len(self.sweep_data > 0) else 0
+        return len(self.sweep_data[0]) if len(self.sweep_data) > 0 else 0
 
 
     def find_ScaleFactor_mVperUnit(self):
@@ -74,17 +108,17 @@ class SweepObject:
         if self.file_format == 'abf':
 
             # Look in header first
-            abf_version = int(file_header.get("fFileVersionNumber",0))
-            if abf_version == 2:
+            
+            if self.abf_version == 2:
                 # channel_headers = ['fInstrumentScaleFactor', 'fADCProgrammableGain',('nTelegraphEnable','fTelegraphAdditGain')]
                 if 'listADCInfo' not in self.header:
-                    return [0 for i in range(len(analogSignal_list))] # Return 0 for ScaleFactor_mVperUnit scale information is not in ABF header 
+                    return [0 for i in range(len(self.sweep_data))] # Return 0 for ScaleFactor_mVperUnit scale information is not in ABF header 
 
                 
                 
                 for channel_dict in self.header['listADCInfo']:
                     total_scalefactor_V = 1
-                    if 'fSignalGain' in channel_dicheadert:
+                    if 'fSignalGain' in channel_dict:
                         if 'nSignalType' in self.header and self.header['nSignalType']!=0:
                             total_scalefactor_V *= channel_dict['fSignalGain']
                     if 'fInstrumentScaleFactor' in channel_dict:
@@ -97,13 +131,13 @@ class SweepObject:
                     ret_list.append(total_scalefactor_V*1000)
                 return ret_list
             
-            if abf_version == 1:
+            if self.abf_version == 1:
                 num_channels = int(self.header.get('nADCNumChannels',0))
                 signalGain = [float(x) for x,channel in zip(self.header.get('fSignalGain',[1]),range(0,num_channels))]
                 InstrumentScaleFactor = [float(x) for x,channel in zip(self.header.get('fInstrumentScaleFactor',[1]),range(0,num_channels))]
                 ADCProgrammableGain = [float(x) for x,channel in zip(self.header.get('fADCProgrammableGain',[1]),range(0,num_channels))]
                 TelegraphEnable = [float(x) for x,channel in zip(self.header.get('nTelegraphEnable',[1]),range(0,num_channels))]
-                TelegraphAdditGain = [float(x) for x,teleEnable in zip(self.header.get('fTelegraphAdditGain',[1]),TelegraphEnable) if teleEnable == 1 else 1]
+                TelegraphAdditGain = [float(x) if teleEnable == 1 else 1 for x,teleEnable in zip(self.header.get('fTelegraphAdditGain',[1]),TelegraphEnable) ]
 
                 return [ a*b*c*d*1000 for a,b,c,d in zip(signalGain,InstrumentScaleFactor,ADCProgrammableGain,TelegraphAdditGain) ]
                 

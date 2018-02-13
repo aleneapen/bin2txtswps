@@ -169,12 +169,16 @@ class AxonIO(BaseIO):
 
         # date and time
         if version < 2.:
-            FileStartTime_seconds = header['lFileStartTime']
-            while FileStartTime_seconds > 86400:
-                FileStartTime_seconds -= 86400
             YY = 1900
             MM = 1
             DD = 1
+            
+            FileStartTime_seconds = header['lFileStartTime']
+            while FileStartTime_seconds > 86400:
+                FileStartTime_seconds -= 86400
+                DD += 1
+            
+            
             hh = int(FileStartTime_seconds / 3600.)
             mm = int((FileStartTime_seconds - hh * 3600) / 60)
             ss = FileStartTime_seconds - hh * 3600 - mm * 60
@@ -189,12 +193,7 @@ class AxonIO(BaseIO):
             ss = header['uFileStartTimeMS'] / 1000. - hh * 3600 - mm * 60
             ms = int(np.mod(ss, 1) * 1e6)
             ss = int(ss)
-        
-        # if hh > 23:
-        #     hh = 
-        print(version)
-        print(header['lFileStartTime'])
-        print(YY, MM, DD, hh, mm, ss, ms)
+
         bl.rec_datetime = datetime.datetime(YY, MM, DD, hh, mm, ss, ms)
         
 
