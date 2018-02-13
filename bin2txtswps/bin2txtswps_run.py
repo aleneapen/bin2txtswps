@@ -98,7 +98,7 @@ class WorkerThread(Thread):
             for i in self.user_func(**self.variable_dict):
                 file_i += i
                 if self._want_abort:
-                    print('Trying to stop conversion')
+                    print('Stopped conversion')
                     self.show_conversion_info(file_i,start_time)
                     wx.PostEvent(self._notify_window, ResultEvent(None))
                     return
@@ -117,6 +117,7 @@ class WorkerThread(Thread):
         print("Time elapsed: " + str('{:.3f}'.format(elapsed_time)) + " seconds")
         print("****************************")
     def abort(self):
+        print('Will stop conversion at the end of current sweep')
         self._want_abort = 1
 
 
