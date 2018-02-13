@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 This is a slightly modified version of neo's axonIO script:
-    it includes mode 4 (High-Speed Oscilloscope Mode) for reading
+Modifications from the original allow this the AxonIO class to:
+    read mode 4 abf files (High-Speed Oscilloscope Mode)
+    read abf1.x files which have start time (lFileStartTime in header) that is greater than 84000
     
 
 Class for reading data from pCLAMP and AxoScope
