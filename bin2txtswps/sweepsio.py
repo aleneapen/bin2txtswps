@@ -43,11 +43,11 @@ class SweepObject:
 
             for channel_i in range(len(self.sweep_data)):
                 try:
-                    rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(' \t\r\n\0')).dimensionality)
+                    rec_units = str(pq.Quantity(1,channel_units_array[channel_i].strip(b' \t\r\n\0')).dimensionality)
                 except:
                     rec_units = str(self.sweep_data[channel_i].units.dimensionality)
                                 
-                channel_name = channel_names_array[channel_i].strip(' \t\r\n\0')
+                channel_name = channel_names_array[channel_i].strip(b' \t\r\n\0')
                 if channel_name == "":
                     channel_name = self.sweep_data[channel_i].name.strip(' \t\r\n\0')
 
@@ -71,7 +71,7 @@ class SweepObject:
 
         header_string = "\n".join(["ATF\t" + ATF_VER,
                         "{} \t {}".format(OPT_HEADER,str(data_cols)),
-                        "\"SweepStartTimesMS = {:e}\"".format(float(self.sweep_data[0].t_start.rescale('ms'))),
+                        "\"SweepStartTimesMS = {}\"".format(float(self.sweep_data[0].t_start.rescale('ms'))),
                         "\"NumSamplesPerSweep = {}\"".format(str(self.find_NumSamplesPerSweep())),
                         "\"ScaleFactor_mVperUnit = {}\"".format(", ".join([str(num) for num in self.find_ScaleFactor_mVperUnit()])),
                         "{}{}".format(time_header,data_col_header)])
