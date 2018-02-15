@@ -4,7 +4,8 @@ This is a slightly modified version of neo's axonIO script:
 Modifications from the original allow this the AxonIO class to:
     read mode 4 abf files (High-Speed Oscilloscope Mode)
     read abf1.x files which have start time (lFileStartTime in header) that is greater than 84000
-    
+    read abf2.x files from Clampfit
+
 
 Class for reading data from pCLAMP and AxoScope
 files (.abf version 1 and 2), developed by Molecular device/Axon technologies.
@@ -51,9 +52,6 @@ import quantities as pq
 
 from neo.io.baseio import BaseIO
 from neo.core import Block, Segment, AnalogSignal, Event
-
-def clamp(n, smallest, largest): 
-    return max(smallest, min(n, largest))
 
 
 class StructFile(BufferedReader):
@@ -443,7 +441,6 @@ class AxonIO(BaseIO):
             # hack for reading channels names and units
             fid.seek(sections['StringsSection']['uBlockIndex'] * BLOCKSIZE)
             big_string = fid.read(sections['StringsSection']['uBytes'])
-            
             goodstart=-1
             for key in [b'AXENGN', b'clampex', b'Clampex', b'CLAMPEX', b'axoscope',b'Clampf',b'clampf']:
                 #goodstart = big_string.lower().find(key)
