@@ -1,5 +1,6 @@
 from numpy import savetxt, subtract, array, concatenate
-
+import quantities as pq 
+from sweepsio import SweepObject
 
 # Function to write ATF file
 def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_header = {},file_type='abf'):
@@ -95,18 +96,14 @@ def build_full_header(analogSignal_list,ATF_VER="1.0",OPT_HEADER="3", file_heade
                     
     return header_string
     
-def write_ATF(analogSignals,write_path,file_header,file_type='abf'):
+# >>>>>>> master
+# def write_ATF(analogSignals,write_path,file_header,file_type='abf'):
+#     sweep_object = SweepObject(analogSignals,file_type,file_header)
 
-    ret_array = array(subtract(analogSignals[0].times, analogSignals[0].times[0]).rescale("ms")).reshape(len(analogSignals[0].times),1)
-
-
-    for signal in analogSignals:
-        ret_array = concatenate((ret_array,array(signal)),axis=1)
-
-    savetxt(write_path,\
-            ret_array,\
-            fmt=('%f' + '\t%e'*len(analogSignals)),\
-            newline='\n',\
-            header=build_full_header(analogSignals,file_header=file_header,file_type=file_type),
-            comments=''
-    )
+#     savetxt(write_path,\
+#             sweep_object.build_sweep_array(),\
+#             fmt=('%f' + '\t%e'*len(analogSignals)),\
+#             newline='\n',\
+#             header = sweep_object.build_atf_header(),
+#             comments=''
+#     )
