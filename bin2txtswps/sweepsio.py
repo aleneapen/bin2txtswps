@@ -54,7 +54,7 @@ class SweepObject:
                 
                 data_col_header += data_col_format.format(
                     channel_name, \
-                    rec_units if rec_units.lower() != "dimensionless" else ""
+                    rec_units if rec_units.lower() != "dimensionless" else str(channel_units_array[channel_i].strip(b' \t\r\n\0'))
                     )
 
 
