@@ -44,12 +44,13 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
         if len(bl.segments) <= 1:
             txtFileName = fileName + out_format
         else:
-            txtFileName = fileName + "_" + str(i+1).zfill(zfill_max_int) + out_format
+            txtFileName = fileName + "_" + str(i+1).zfill(zfill_max_int) + out_format            
+
         fullPathtxt = path.join(folderName,out_folder,txtFileName)
         analogSignals =  bl.segments[i].analogsignals            
         
         write_ATF(analogSignals,fullPathtxt,file_header,input_format)
 
-        print("Wrote " + tail_name +  " to " + txtFileName)
+        print("Wrote {} to {}".format(tail_name,txtFileName))
         file_i += 1
         yield file_i
