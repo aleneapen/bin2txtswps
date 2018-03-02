@@ -101,13 +101,15 @@ class SweepObject:
         # Process WCP header
         if self.file_format == 'wcp':
             for channel in range(int(self.header['NC'])):
-                mVperUnit = float(self.header.get("YG{}".format(channel)))
+                mVperUnit = float(self.header.get("YG{}".format(channel),))
                 ret_list.append(mVperUnit)
             return ret_list
 
         # Igor binary wave file
         if self.file_format == 'ibw':
             if "botFullScale" in self.header and "topFullScale" in self.header:
+                print(self.header["botFullScale"])
+                print(self.header["topFullScale"])  
                 return [1000 / ((self.header["topFullScale"] - self.header["botFullScale"])/20)]
             return [0]
 
