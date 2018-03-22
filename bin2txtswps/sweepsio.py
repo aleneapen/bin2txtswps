@@ -1,23 +1,41 @@
 ATF_VER="1.0"
 OPT_HEADER="3"
+WARNING_NO_GAIN = """
+******* WARNING for file: {} *******
+ScaleFactors (mV/Unit, ie Gains) in the header are 0 or couldn't be found.
+Reasonable ScaleFactors have been substituted.
+Manually adjust if necessary during reanalysis.
+***********************
+"""
+WARNING_NEGATIVE_GAIN = """
+******* Warning for file: {} *******
+ScaleFactors (mV/Unit, ie Gains) in the header are negative.
+Reasonable ScaleFactors have been substituted.
+Manually adjust if necessary during reanalysis.
+***********************"""
+
 from numpy import savetxt, subtract, array, concatenate
 import quantities as pq 
 
 
 class SweepObject:
-    def __init__(self,sweep_data,file_format,header={}):
+    def __init__(self,sweep_data,file_format,header={},file_name=""):
         self.sweep_data = sweep_data
         self.file_format = file_format
         self.header = header
+        self.file_name = file_name
         if self.file_format == "abf":
             self.abf_version = int(self.header.get("fFileVersionNumber",0))
 
     def build_sweep_array(self):
+        if len(self.sweep_data[0].times) == 0:
+            print("File ({}) doesn't appear to have data?".format(self.file_name))
+            return array([[0,0]])
         ret_array = array(subtract(self.sweep_data[0].times, self.sweep_data[0].times[0]).rescale("ms")).reshape(len(self.sweep_data[0].times),1)
         for signal in self.sweep_data:
             ret_array = concatenate((ret_array,array(signal)),axis=1)
         return ret_array
-
+    
     def build_atf_header(self):
         data_cols = len(self.sweep_data)+1
         data_col_format = '\t"{0} ({1})"'
@@ -89,6 +107,22 @@ class SweepObject:
         return len(self.sweep_data[0]) if len(self.sweep_data) > 0 else 0
 
 
+    def correct_igor_gains(self):
+        
+        ret_list = []
+        for channel in self.sweep_data:
+            if str(channel.units.dimensionality) == 'A' or str(channel.units.dimensionality) == 'mA' or str(channel.units.dimensionality) == 'uA':
+                ret_list.append(1)
+            if str(channel.units.dimensionality) == 'V':
+                ret_list.append(1)
+            if str(channel.units.dimensionality) == 'mV':
+                ret_list.append(100)
+            if str(channel.units.dimensionality) == 'pA':
+                ret_list.append(10)
+            if str(channel.units.dimensionality) == 'nA':
+                ret_list.append(1000)
+        return ret_list
+
     def find_ScaleFactor_mVperUnit(self):
         """
         Function to find the total gain in mVperunit
@@ -101,15 +135,30 @@ class SweepObject:
         # Process WCP header
         if self.file_format == 'wcp':
             for channel in range(int(self.header['NC'])):
-                mVperUnit = float(self.header.get("YG{}".format(channel)))
+                mVperUnit = float(self.header.get("YG{}".format(channel))) * 1000
                 ret_list.append(mVperUnit)
             return ret_list
 
         # Igor binary wave file
         if self.file_format == 'ibw':
+            scale_factor = []
             if "botFullScale" in self.header and "topFullScale" in self.header:
-                return [1000 / ((self.header["topFullScale"] - self.header["botFullScale"])/20)]
-            return [0]
+                try:
+                    scale_factor_header = 1000 / ((self.header["topFullScale"] - self.header["botFullScale"])/20)
+                    if scale_factor_header < 0:
+                        print(WARNING_NEGATIVE_GAIN.format(self.file_name))
+                        scale_factor = self.correct_igor_gains()
+                    else:
+                        return [scale_factor_header]
+
+                    return scale_factor
+                except ZeroDivisionError:
+                    pass
+            print(WARNING_NO_GAIN.format(self.file_name))
+            scale_factor = self.correct_igor_gains()
+            
+            
+            return scale_factor
 
         # Process ABF header
         if self.file_format == 'abf':
@@ -149,3 +198,10 @@ class SweepObject:
                 return [ a*b*c*d*1000 for a,b,c,d in zip(signalGain,InstrumentScaleFactor,ADCProgrammableGain,TelegraphAdditGain) ]
                 
         return ret_list
+
+    def get_data_type(self):
+        for channel in self.sweep_data:
+           
+            if channel.dtype.char != 'f':
+                return "string"
+        return "float"

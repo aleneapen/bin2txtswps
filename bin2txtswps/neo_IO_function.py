@@ -49,7 +49,7 @@ def neo_IO_function(fullPath_read,out_format,out_folder,file_i=0):
         fullPathtxt = path.join(folderName,out_folder,txtFileName)
         analogSignals =  bl.segments[i].analogsignals            
         
-        write_ATF(analogSignals,fullPathtxt,file_header,input_format)
+        write_ATF(analogSignals,fullPathtxt,file_header,input_format,tail_name)
 
         print("Wrote {} to {}".format(tail_name,txtFileName))
         file_i += 1
