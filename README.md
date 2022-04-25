@@ -1,5 +1,7 @@
 # bin2txtswps
-Convert from common neuroscience binary formats (ABF, WCP) to text formats (ATF). This is useful for analysis programs that require text formats. bin2txtswps uses [neo](http://neo.readthedocs.io/en/0.5.1/install.html), [numpy](http://www.numpy.org/), [wx](https://wxpython.org/) and [quantities](https://github.com/python-quantities/python-quantities). It has GUI entry point (bin2txtswps_run.py).
+Convert from common neuroscience binary formats (ABF, WCP) to text formats (ATF). This is useful for analysis programs that require text formats. bin2txtswps uses [neo](http://neo.readthedocs.io/en/0.5.1/install.html), [numpy](http://www.numpy.org/), [wx](https://wxpython.org/) and [quantities](https://github.com/python-quantities/python-quantities). It has a GUI entry point (bin2txtswps_run.py).
+
+bin2txtswps is now packaged with the [WinLTP analysis software](https://www.winltp.com/Registration_Conditions.html) (available free of charge). For instructions on using the compiled program, see the [WinLTP help page](https://www.winltp.com/ReanalysisOf_ABF_IBW_WCP_Files.html).
 
 # Before running
 Required python modules are listed in requirements.txt (this file was auto-generated with pip)
